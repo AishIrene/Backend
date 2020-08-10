@@ -17,7 +17,3 @@ require("./app/routes/residuo.routes.js")(app);
 app.listen(port, function() {
   console.log("Running on port " + port);
 });
-
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
-});

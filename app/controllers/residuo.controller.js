@@ -1,7 +1,7 @@
 const Residuo = require("../models/residuo.model.js");
 
 // Create and Save a new Residuo
-exports.create = (req, res) => {
+/*exports.create = (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
@@ -23,7 +23,7 @@ exports.create = (req, res) => {
       });
     else res.send(data);
   });
-};
+};*/
 
 // Retrieve all Residuos from the database.
 exports.findAll = (req, res) => {
@@ -55,7 +55,7 @@ exports.findOne = (req, res) => {
 };
 
 // Update a Residuo identified by the residuoId in the request
-exports.update = (req, res) => {
+/*exports.update = (req, res) => {
   // Validate Request
   if (!req.body) {
     res.status(400).send({
@@ -80,10 +80,10 @@ exports.update = (req, res) => {
       } else res.send(data);
     }
   );
-};
+};*/
 
 // Delete a Residuo with the specified residuoID in the request
-exports.delete = (req, res) => {
+/*exports.delete = (req, res) => {
   Residuo.remove(req.params.residuoId, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -97,10 +97,10 @@ exports.delete = (req, res) => {
       }
     } else res.send({ message: `Residuo was deleted successfully!` });
   });
-};
+};*/
 
 // Delete all Residuos from the database.
-exports.deleteAll = (req, res) => {
+/*exports.deleteAll = (req, res) => {
   Residuo.removeAll((err, data) => {
     if (err)
       res.status(500).send({
@@ -109,4 +109,4 @@ exports.deleteAll = (req, res) => {
       });
     else res.send({ message: `All reisiduos were deleted successfully!` });
   });
-};
+};*/

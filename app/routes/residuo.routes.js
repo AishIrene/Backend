@@ -2,7 +2,7 @@ module.exports = app => {
   const residuos = require("../controllers/residuo.controller.js");
 
   // Create a new Residuo
-  app.post("/residuos", residuos.create);
+  //app.post("/residuos", residuos.create);
 
   // Retrieve all Residuos
   app.get("/residuos", residuos.findAll);
@@ -11,11 +11,11 @@ module.exports = app => {
   app.get("/residuos/:residuoId", residuos.findOne);
 
   // Update a Residuo with residuoId
-  app.put("/residuos/:residuoId", residuos.update);
+  //app.put("/residuos/:residuoId", residuos.update);
 
   // Delete a Residuo with residuoId
-  app.delete("/residuos/:residuoId", residuos.delete);
+  //app.delete("/residuos/:residuoId", residuos.delete);
 
   // Create a new Residuo
-  app.delete("/residuos", residuos.deleteAll);
+  //app.delete("/residuos", residuos.deleteAll);
 };

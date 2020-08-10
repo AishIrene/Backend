@@ -5,7 +5,7 @@ const Residuo = function(residuo) {
   this.nombre = residuo.nombre;
 };
 
-Residuo.create = (newResiduo, result) => {
+/*Residuo.create = (newResiduo, result) => {
   sql.query("INSERT INTO residuos SET ?", newResiduo, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -16,7 +16,7 @@ Residuo.create = (newResiduo, result) => {
     console.log("created residuo: ", { id: res.insertId, ...newResiduo });
     result(null, { id: res.insertId, ...newResiduo  });
   });
-};
+};*/
 
 Residuo.findById = (residuoId, result) => {
   sql.query(`SELECT * FROM residuos WHERE id = ${residuoId}`, (err, res) => {
@@ -50,7 +50,7 @@ Residuo.getAll = result => {
   });
 };
 
-Residuo.updateById = (id, residuo, result) => {
+/*Residuo.updateById = (id, residuo, result) => {
   sql.query(
     "UPDATE residuos SET nombre = ? WHERE id = ?",
     [residuo.nombre, id],
@@ -71,9 +71,9 @@ Residuo.updateById = (id, residuo, result) => {
       result(null, { id: id, ...residuo });
     }
   );
-};
+};*/
 
-Residuo.remove = (id, result) => {
+/*Residuo.remove = (id, result) => {
   sql.query("DELETE FROM residuos WHERE id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -90,9 +90,9 @@ Residuo.remove = (id, result) => {
     console.log("deleted residuo with id: ", id);
     result(null, res);
   });
-};
+};*/
 
-Residuo.removeAll = result => {
+/*Residuo.removeAll = result => {
   sql.query("DELETE FROM residuos", (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -103,6 +103,6 @@ Residuo.removeAll = result => {
     console.log(`deleted ${res.affectedRows} residuos`);
     result(null, res);
   });
-};
+};*/
 
 module.exports = Residuo;
