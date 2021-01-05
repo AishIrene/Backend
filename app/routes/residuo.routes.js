@@ -1,8 +1,8 @@
-module.exports = app => {
-  const residuos = require("../controllers/residuo.controller.js");
+/* The requests that clients are able to send */
 
-  // Create a new Residuo
-  //app.post("/residuos", residuos.create);
+module.exports = app => {
+  
+  const residuos = require("../controllers/residuo.controller.js");
 
   // Retrieve all Residuos
   app.get("/residuos", residuos.findAll);
@@ -10,12 +10,17 @@ module.exports = app => {
   // Retrieve a single Residuo with residuoId
   app.get("/residuos/:residuoId", residuos.findOne);
 
+  /*****************************************************************/
+
+  // Create a new Residuo
+  //app.post("/residuos", residuos.create);
+
   // Update a Residuo with residuoId
   //app.put("/residuos/:residuoId", residuos.update);
 
   // Delete a Residuo with residuoId
   //app.delete("/residuos/:residuoId", residuos.delete);
 
-  // Create a new Residuo
+  // Delete all Residuos in the database
   //app.delete("/residuos", residuos.deleteAll);
 };

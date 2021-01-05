@@ -5,19 +5,6 @@ const Residuo = function(residuo) {
   this.nombre = residuo.nombre;
 };
 
-/*Residuo.create = (newResiduo, result) => {
-  sql.query("INSERT INTO residuos SET ?", newResiduo, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-
-    console.log("created residuo: ", { id: res.insertId, ...newResiduo });
-    result(null, { id: res.insertId, ...newResiduo  });
-  });
-};*/
-
 Residuo.findById = (residuoId, result) => {
   sql.query(`SELECT * FROM residuos WHERE id = ${residuoId}`, (err, res) => {
     if (err) {
@@ -49,6 +36,21 @@ Residuo.getAll = result => {
     result(null, res);
   });
 };
+
+/************************************************************************/
+
+/*Residuo.create = (newResiduo, result) => {
+  sql.query("INSERT INTO residuos SET ?", newResiduo, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    console.log("created residuo: ", { id: res.insertId, ...newResiduo });
+    result(null, { id: res.insertId, ...newResiduo  });
+  });
+};*/
 
 /*Residuo.updateById = (id, residuo, result) => {
   sql.query(

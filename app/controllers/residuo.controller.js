@@ -1,30 +1,5 @@
 const Residuo = require("../models/residuo.model.js");
 
-// Create and Save a new Residuo
-/*exports.create = (req, res) => {
-  // Validate request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
-  }
-
-  // Create a Residuo
-  const residuo = new Residuo({
-    nombre: req.body.nombre
-  });
-
-  // Save Residuo in the database
-  Residuo.create(residuo, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Residuo."
-      });
-    else res.send(data);
-  });
-};*/
-
 // Retrieve all Residuos from the database.
 exports.findAll = (req, res) => {
   Residuo.getAll((err, data) => {
@@ -53,6 +28,33 @@ exports.findOne = (req, res) => {
     } else res.send(data);
   });
 };
+
+/****************************************************************************/
+
+// Create and Save a new Residuo
+/*exports.create = (req, res) => {
+  // Validate request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+
+  // Create a Residuo
+  const residuo = new Residuo({
+    nombre: req.body.nombre
+  });
+
+  // Save Residuo in the database
+  Residuo.create(residuo, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while creating the Residuo."
+      });
+    else res.send(data);
+  });
+};*/
 
 // Update a Residuo identified by the residuoId in the request
 /*exports.update = (req, res) => {

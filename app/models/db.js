@@ -1,5 +1,24 @@
+/* Connection to the MySQL DB where the data is stored */
+
 const mysql = require("mysql");
 const dbConfig = require("../config/db.config.js");
+
+/***************************************************************
+
+"../config/db.config.js" = Configuration of the BD 
+where the data is stored.
+
+To run this REST API you need to create the file and fill in the 
+database parameters:
+
+module.exports = {
+  HOST: "...",
+  USER: "...",
+  PASSWORD: "...",
+  DB: "..."
+};
+
+****************************************************************/
 
 // Create a connection to the database
 const connection = mysql.createConnection({
