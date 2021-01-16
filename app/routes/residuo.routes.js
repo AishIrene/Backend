@@ -7,11 +7,15 @@ module.exports = app => {
   // Retrieve all Residuos
   app.get("/residuos", residuos.findAll);
 
-  //Retrieve a single Residuo with its name
-  app.get("/residuos/:residuoName", residuos.findOne);
+  //Retrieve all Contenedores that fit the Resisuo name and location introduced by the user
+  app.get("/residuos/:residuoName", residuos.find);
 
 /*****************************************************************/
-/*// Retrieve a single Residuo with residuoId
+
+/*//Retrieve a single Residuo with its name
+  app.get("/residuos/:residuoName", residuos.findOne);
+  
+  // Retrieve a single Residuo with residuoId
   app.get("/residuos/:residuoId", residuos.findOne);
 
   // Create a new Residuo

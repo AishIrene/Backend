@@ -14,7 +14,32 @@ exports.findAll = (req, res) => {
   });
 };
 
-// Find a single Residuo with a residuoName
+// I DON'T KNOW
+exports.find = (req, res) => {
+  Residuo.findByName(req.params.residuoName, (err, data) => {
+  //Residuo.findByLocation(req.params.contenedor, req.params.latitude, req.params.longitude, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found Residuo with name ${req.params.residuoName}.`
+          //message: `Not found Residuo with name ${req.params.contenedor}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving Residuo with name " + req.params.residuoName
+          //message: "Error retrieving Residuo with name " + req.params.contenedor
+        });
+      }
+    } else {
+      console.log("HERE IS THE DATA: "+ data);
+      res.send(data);
+    }
+  });
+};
+
+
+/****************************************************************************/
+/*// Find a single Residuo with a residuoName
 exports.findOne = (req, res, next) => {
   Residuo.findByName(req.params.residuoName, (err, data) => {
     if (err) {
@@ -31,8 +56,7 @@ exports.findOne = (req, res, next) => {
   });
 };
 
-/****************************************************************************/
-/*// Find a single Residuo with a residuoId
+// Find a single Residuo with a residuoId
 exports.findOne = (req, res) => {
   Residuo.findById(req.params.residuoId, (err, data) => {
     if (err) {

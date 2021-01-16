@@ -5,16 +5,6 @@ const Residuo = function(residuo) {
   this.nombre = residuo.nombre;
 };
 
-const Contenedor = function(contenedor) {
-  this.tipo = contenedor.tipo;
-  this.direccion = contenedor.direccion;
-  this.centro = contenedor.centro;
-  this.horario = contenedor.horario;
-  this.observaciones = contenedor.observaciones;
-  this.latitud = contenedor.latitud;
-  this.longitud = contenedor.longitud;
-};
-
 Residuo.getAll = result => {
   sql.query("SELECT * FROM residuos", (err, res) => {
     if (err) {
@@ -47,9 +37,8 @@ Residuo.findByName = (residuoName, result) => {
   });
 };
 
-
-Residuo.findByNameAndLocation = (residuoName, residuoLocation, result) => {
-  sql.query(`SELECT * FROM residuos WHERE nombre = "${residuoName}"`, (err, res) => {
+Residuo.findById = (residuoId, result) => {
+  sql.query(`SELECT * FROM lugar_de_desecho WHERE residuoID = ${residuoId}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -57,12 +46,31 @@ Residuo.findByNameAndLocation = (residuoName, residuoLocation, result) => {
     }
 
     if (res.length) {
-      console.log("found residuo: ", res[0]);
+      console.log("found results: ", res[0]);
       result(null, res[0]);
       return;
     }
 
-    // not found Residuo with that name
+    // results not found
+    result({ kind: "not_found" }, null);
+  });
+};
+
+Residuo.findByLocation = (contenedor, latitude, longitude, result) => {
+  sql.query(`SELECT * FROM ${contenedor} WHERE latitud = "${latitude}" AND longitud = "${longitude}"`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found contenedor: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found contenedor near that location
     result({ kind: "not_found" }, null);
   });
 };
@@ -159,4 +167,4 @@ Residuo.create = (newResiduo, result) => {
 };*/
 
 module.exports = Residuo;
-module.exports = Contenedor;
+//module.exports = Contenedor;
