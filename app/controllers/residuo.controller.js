@@ -1,6 +1,6 @@
 const Residuo = require("../models/residuo.model.js");
 
-// Retrieve all Residuos from the database.
+// Retrieve all Residuos from the database
 exports.findAll = (req, res) => {
   Residuo.getAll((err, data) => {
     if (err)
@@ -9,10 +9,30 @@ exports.findAll = (req, res) => {
           err.message || "Some error occurred while retrieving residuos."
       });
     else res.send(data);
+
+    //next()      
   });
 };
 
-// Find a single Residuo with a residuoId
+// Find a single Residuo with a residuoName
+exports.findOne = (req, res, next) => {
+  Residuo.findByName(req.params.residuoName, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found Residuo with name ${req.params.residuoName}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving Residuo with name " + req.params.residuoName
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+/****************************************************************************/
+/*// Find a single Residuo with a residuoId
 exports.findOne = (req, res) => {
   Residuo.findById(req.params.residuoId, (err, data) => {
     if (err) {
@@ -29,10 +49,8 @@ exports.findOne = (req, res) => {
   });
 };
 
-/****************************************************************************/
-
 // Create and Save a new Residuo
-/*exports.create = (req, res) => {
+exports.create = (req, res) => {
   // Validate request
   if (!req.body) {
     res.status(400).send({
@@ -54,10 +72,10 @@ exports.findOne = (req, res) => {
       });
     else res.send(data);
   });
-};*/
+};
 
 // Update a Residuo identified by the residuoId in the request
-/*exports.update = (req, res) => {
+exports.update = (req, res) => {
   // Validate Request
   if (!req.body) {
     res.status(400).send({
@@ -82,10 +100,10 @@ exports.findOne = (req, res) => {
       } else res.send(data);
     }
   );
-};*/
+};
 
 // Delete a Residuo with the specified residuoID in the request
-/*exports.delete = (req, res) => {
+exports.delete = (req, res) => {
   Residuo.remove(req.params.residuoId, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -99,10 +117,10 @@ exports.findOne = (req, res) => {
       }
     } else res.send({ message: `Residuo was deleted successfully!` });
   });
-};*/
+};
 
 // Delete all Residuos from the database.
-/*exports.deleteAll = (req, res) => {
+nexports.deleteAll = (req, res) => {
   Residuo.removeAll((err, data) => {
     if (err)
       res.status(500).send({

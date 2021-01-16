@@ -7,20 +7,22 @@ module.exports = app => {
   // Retrieve all Residuos
   app.get("/residuos", residuos.findAll);
 
-  // Retrieve a single Residuo with residuoId
+  //Retrieve a single Residuo with its name
+  app.get("/residuos/:residuoName", residuos.findOne);
+
+/*****************************************************************/
+/*// Retrieve a single Residuo with residuoId
   app.get("/residuos/:residuoId", residuos.findOne);
 
-  /*****************************************************************/
-
   // Create a new Residuo
-  //app.post("/residuos", residuos.create);
+  app.post("/residuos", residuos.create);
 
   // Update a Residuo with residuoId
-  //app.put("/residuos/:residuoId", residuos.update);
+  app.put("/residuos/:residuoId", residuos.update);
 
   // Delete a Residuo with residuoId
-  //app.delete("/residuos/:residuoId", residuos.delete);
+  app.delete("/residuos/:residuoId", residuos.delete);
 
   // Delete all Residuos in the database
-  //app.delete("/residuos", residuos.deleteAll);
+  app.delete("/residuos", residuos.deleteAll);*/
 };

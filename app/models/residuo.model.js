@@ -5,6 +5,72 @@ const Residuo = function(residuo) {
   this.nombre = residuo.nombre;
 };
 
+const Contenedor = function(contenedor) {
+  this.tipo = contenedor.tipo;
+  this.direccion = contenedor.direccion;
+  this.centro = contenedor.centro;
+  this.horario = contenedor.horario;
+  this.observaciones = contenedor.observaciones;
+  this.latitud = contenedor.latitud;
+  this.longitud = contenedor.longitud;
+};
+
+Residuo.getAll = result => {
+  sql.query("SELECT * FROM residuos", (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("residuos: ", res);
+    result(null, res);
+  });
+};
+
+Residuo.findByName = (residuoName, result) => {
+  sql.query(`SELECT * FROM residuos WHERE nombre = "${residuoName}"`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found residuo: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found Residuo with that name
+    result({ kind: "not_found" }, null);
+  });
+};
+
+
+Residuo.findByNameAndLocation = (residuoName, residuoLocation, result) => {
+  sql.query(`SELECT * FROM residuos WHERE nombre = "${residuoName}"`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found residuo: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found Residuo with that name
+    result({ kind: "not_found" }, null);
+  });
+};
+
+/************************************************************************/
+
+/*
+
 Residuo.findById = (residuoId, result) => {
   sql.query(`SELECT * FROM residuos WHERE id = ${residuoId}`, (err, res) => {
     if (err) {
@@ -24,22 +90,7 @@ Residuo.findById = (residuoId, result) => {
   });
 };
 
-Residuo.getAll = result => {
-  sql.query("SELECT * FROM residuos", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
-
-    console.log("residuos: ", res);
-    result(null, res);
-  });
-};
-
-/************************************************************************/
-
-/*Residuo.create = (newResiduo, result) => {
+Residuo.create = (newResiduo, result) => {
   sql.query("INSERT INTO residuos SET ?", newResiduo, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -108,3 +159,4 @@ Residuo.getAll = result => {
 };*/
 
 module.exports = Residuo;
+module.exports = Contenedor;
