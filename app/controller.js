@@ -1,6 +1,6 @@
-const Residuo = require("../models/residuo.model.js");
+const Residuo = require("./model.js");
 const https = require ("https");
-const googleAPI = require("../config/googleAPI.config.js");
+const googleAPI = require("./config/googleAPI.config.js");
 
 // Retrieve all Residuos from the database
 exports.findAll = (req, res) => {

@@ -1,7 +1,7 @@
 /* Connection to the MySQL DB where the data is stored */
 
 const mysql = require("mysql");
-const dbConfig = require("../config/db.config.js");
+const dbConfig = require("./config/db.config.js");
 
 /***************************************************************
 

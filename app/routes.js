@@ -2,7 +2,7 @@
 
 module.exports = app => {
   
-  const residuos = require("../controllers/residuo.controller.js");
+  const residuos = require("./controller.js");
 
   // Retrieve all Residuos
   app.get("/residuos", residuos.findAll);

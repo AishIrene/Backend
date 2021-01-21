@@ -20,7 +20,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-require("./app/routes/residuo.routes.js")(app);
+require("./app/routes.js")(app);
 
 //The app starts listening for requests
 app.listen(port, function() {
