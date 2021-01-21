@@ -19,7 +19,8 @@ Residuo.getAll = result => {
 };
 
 Residuo.findByName = (residuoName, result) => {
-  sql.query(`SELECT * FROM residuos WHERE nombre = "${residuoName}"`, (err, res) => {
+  
+  sql.query(`SELECT * FROM residuo WHERE nombre = "${residuoName}"`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -56,8 +57,8 @@ Residuo.findById = (residuoId, result) => {
   });
 };
 
-Residuo.findByLocation = (contenedor, latitude, longitude, result) => {
-  sql.query(`SELECT * FROM ${contenedor} WHERE latitud = "${latitude}" AND longitud = "${longitude}"`, (err, res) => {
+Residuo.findByLocation = (contenedor, type, latitude, longitude, result) => {
+  sql.query(`SELECT * FROM ${contenedor} WHERE tipo = "${type}" AND latitud = "${latitude}" AND longitud = "${longitude}"`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -74,6 +75,8 @@ Residuo.findByLocation = (contenedor, latitude, longitude, result) => {
     result({ kind: "not_found" }, null);
   });
 };
+
+module.exports = Residuo;
 
 /************************************************************************/
 
@@ -164,7 +167,8 @@ Residuo.create = (newResiduo, result) => {
     console.log(`deleted ${res.affectedRows} residuos`);
     result(null, res);
   });
-};*/
+};
 
-module.exports = Residuo;
-//module.exports = Contenedor;
+module.exports = Contenedor;
+
+*/

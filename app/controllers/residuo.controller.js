@@ -1,4 +1,6 @@
 const Residuo = require("../models/residuo.model.js");
+const https = require ("https");
+const googleAPI = require("../config/googleAPI.config.js");
 
 // Retrieve all Residuos from the database
 exports.findAll = (req, res) => {
@@ -14,26 +16,80 @@ exports.findAll = (req, res) => {
   });
 };
 
-// I DON'T KNOW
+// Find which type of Contenedor is the adequate for the Residuo and the Contenedor items that are located near an especific location
 exports.find = (req, res) => {
   Residuo.findByName(req.params.residuoName, (err, data) => {
-  //Residuo.findByLocation(req.params.contenedor, req.params.latitude, req.params.longitude, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
           message: `Not found Residuo with name ${req.params.residuoName}.`
-          //message: `Not found Residuo with name ${req.params.contenedor}.`
         });
       } else {
         res.status(500).send({
           message: "Error retrieving Residuo with name " + req.params.residuoName
-          //message: "Error retrieving Residuo with name " + req.params.contenedor
         });
       }
     } else {
-      console.log("HERE IS THE DATA: "+ data);
-      res.send(data);
+      Residuo.findById(data.residuoID, (err, data) => {
+        if (err) {
+          if (err.kind === "not_found") {
+            res.status(404).send({
+              message: `Not found Residuo with id ${data.residuoID}.`
+            });
+          } else {
+            res.status(500).send({
+              message: "Error retrieving Residuo with id " + data.residuoID
+            });
+          }
+        } else {
+          if (data.donde_desechar == "contenedor_ENVASES") {
+            Residuo.findByLocation("contenedor", "ENVASES", req.params.latitude, req.params.longitude, (err, data) => {
+              if (err) {
+                if (err.kind === "not_found") {
+                  res.status(404).send({
+                    message: `Not found Contenedor with name Contenedor Envases near that location.`
+                  });
+                } else {
+                  res.status(500).send({
+                    message: "Error retrieving Contenedor with name Contenedor Envases near that location"
+                  });
+                }
+              } else {
+                coordinates("CALLE JUAN TORNERO, 50", (res) => {
+                  console.log(res.lat);
+                  console.log(res.lng);
+                });
+                
+                res.send(data); 
+              }
+            });
+          }
+        }
+      });
     }
+  });
+};
+
+coordinates = (address, result) => {
+  url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&key=" + googleAPI.API_KEY;
+  https.get(url, (res) => {
+    //console.log('statusCode:', res.statusCode);
+    //console.log('headers:', res.headers);
+
+    res.setEncoding('utf8');
+
+    var info = "";
+
+    res.on('data', (d) => {
+      info += d;
+    });
+
+    res.on('end', () => {
+      result(JSON.parse(info).results[0].geometry.location);
+    });
+
+  }).on('error', (e) => {
+    console.error(e);
   });
 };
 

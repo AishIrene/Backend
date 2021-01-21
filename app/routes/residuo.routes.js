@@ -8,7 +8,7 @@ module.exports = app => {
   app.get("/residuos", residuos.findAll);
 
   //Retrieve all Contenedores that fit the Resisuo name and location introduced by the user
-  app.get("/residuos/:residuoName", residuos.find);
+  app.get("/residuos/:residuoName/:latitude/:longitude", residuos.find);
 
 /*****************************************************************/
 
