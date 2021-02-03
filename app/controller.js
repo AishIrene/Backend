@@ -1,24 +1,22 @@
-const Residuo = require("./model.js");
-const https = require ("https");
+const model = require("./model.js");
 const googleAPI = require("./config/googleAPI.config.js");
+const https = require ("https");
 
 // Retrieve all Residuos from the database
 exports.findAll = (req, res) => {
-  Residuo.getAll((err, data) => {
+  model.getAll((err, data) => {
     if (err)
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving residuos."
       });
     else res.send(data);
-
-    //next()      
   });
 };
 
-// Find which type of Contenedor is the adequate for the Residuo and the Contenedor items that are located near an especific location
+// Retrieve all Contenedores that fit the Resisuo name and location introduced by the user
 exports.find = (req, res) => {
-  Residuo.findByName(req.params.residuoName, (err, data) => {
+  model.findByName(req.params.residuoName, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -30,7 +28,7 @@ exports.find = (req, res) => {
         });
       }
     } else {
-      Residuo.findById(data.residuoID, (err, data) => {
+      model.findById(data.residuoID, (err, data) => {
         if (err) {
           if (err.kind === "not_found") {
             res.status(404).send({
@@ -42,28 +40,36 @@ exports.find = (req, res) => {
             });
           }
         } else {
-          if (data.donde_desechar == "contenedor_ENVASES") {
-            Residuo.findByLocation("contenedor", "ENVASES", req.params.latitude, req.params.longitude, (err, data) => {
-              if (err) {
-                if (err.kind === "not_found") {
-                  res.status(404).send({
-                    message: `Not found Contenedor with name Contenedor Envases near that location.`
-                  });
-                } else {
-                  res.status(500).send({
-                    message: "Error retrieving Contenedor with name Contenedor Envases near that location"
-                  });
-                }
-              } else {
-                coordinates("CALLE JUAN TORNERO, 50", (res) => {
-                  console.log(res.lat);
-                  console.log(res.lng);
-                });
-                
-                res.send(data); 
-              }
-            });
+          var contenedor = "";
+          var type = "";
+
+          if(data.donde_desechar.substring(11).includes("_") || data.donde_desechar.substring(11) == ("pilas" || "ropa")) 
+            contenedor = data.donde_desechar;
+          else {
+            contenedor = "contenedor";
+            type = data.donde_desechar.substring(11);
           }
+
+          model.findByLocation(contenedor, type, req.params.latitude, req.params.longitude, (err, data) => {
+            if (err) {
+              if (err.kind === "not_found") {
+                res.status(404).send({
+                  message: `Not found Contenedor <${contenedor} ${type}> near that location.`
+                });
+              } else {
+                res.status(500).send({
+                  message: "Error retrieving Contenedor <" + contenedor + " " + type + "> near that location"
+                });
+              }
+            } else {
+              coordinates("CALLE JUAN TORNERO, 50", (res) => {
+                console.log(res.lat);
+                console.log(res.lng);
+              });
+              
+              res.send(data);
+            }
+          });
         }
       });
     }

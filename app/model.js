@@ -1,82 +1,85 @@
 const sql = require("./db.js");
 
-// constructor
-const Residuo = function(residuo) {
-  this.nombre = residuo.nombre;
-};
-
-Residuo.getAll = result => {
-  sql.query("SELECT * FROM residuos", (err, res) => {
+exports.getAll = result => {
+  sql.query("SELECT * FROM residuo", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      console.log("Error: ", err);
       result(null, err);
       return;
     }
 
-    console.log("residuos: ", res);
+    console.log("Residuos: ", res);
     result(null, res);
   });
 };
 
-Residuo.findByName = (residuoName, result) => {
+/********************************/
+
+exports.findByName = (residuoName, result) => {
   
   sql.query(`SELECT * FROM residuo WHERE nombre = "${residuoName}"`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      console.log("Error: ", err);
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found residuo: ", res[0]);
+      console.log("Found residuo: ", res[0]);
       result(null, res[0]);
       return;
     }
 
-    // not found Residuo with that name
+    // Not found Residuo with that name
     result({ kind: "not_found" }, null);
   });
 };
 
-Residuo.findById = (residuoId, result) => {
+/********************************/
+
+exports.findById = (residuoId, result) => {
   sql.query(`SELECT * FROM lugar_de_desecho WHERE residuoID = ${residuoId}`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      console.log("Error: ", err);
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found results: ", res[0]);
+      console.log("Found results: ", res[0]);
       result(null, res[0]);
       return;
     }
 
-    // results not found
+    // Results not found
     result({ kind: "not_found" }, null);
   });
 };
 
-Residuo.findByLocation = (contenedor, type, latitude, longitude, result) => {
-  sql.query(`SELECT * FROM ${contenedor} WHERE tipo = "${type}" AND latitud = "${latitude}" AND longitud = "${longitude}"`, (err, res) => {
+/********************************/
+
+exports.findByLocation = (contenedor, type, latitude, longitude, result) => {
+  var query = "";
+  if (type == "") query = `SELECT * FROM ${contenedor} WHERE latitud = "${latitude}" AND longitud = "${longitude}"`;
+  else query = `SELECT * FROM ${contenedor} WHERE tipo = "${type}" AND latitud = "${latitude}" AND longitud = "${longitude}"`;
+  
+   sql.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      console.log("Error: ", err);
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found contenedor: ", res[0]);
+      console.log("Found contenedor(es): ", res[0]);
       result(null, res[0]);
       return;
     }
 
-    // not found contenedor near that location
+    // Not found contenedor near that location
     result({ kind: "not_found" }, null);
   });
 };
-
-module.exports = Residuo;
 
 /************************************************************************/
 
@@ -168,7 +171,5 @@ Residuo.create = (newResiduo, result) => {
     result(null, res);
   });
 };
-
-module.exports = Contenedor;
 
 */

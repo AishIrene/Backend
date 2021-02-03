@@ -12,9 +12,9 @@ const app = express();
 //Establish the port where the app will run
 const port = process.env.PORT || 3001;
 
-//Making sure the app uses different Express JS packahes for
-//creating logs (morgan), parsing requests (body-parser) and 
-//make the resources available to other origins (cors)
+/*Making sure the app uses different Express JS packages for
+creating logs (morgan), parsing requests (body-parser) and 
+make the resources available to other origins (cors)*/
 app.use(logger('dev'));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));

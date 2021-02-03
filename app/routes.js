@@ -2,13 +2,15 @@
 
 module.exports = app => {
   
-  const residuos = require("./controller.js");
+  const controller = require("./controller.js");
 
   // Retrieve all Residuos
-  app.get("/residuos", residuos.findAll);
+  app.get("/residuos", controller.findAll);
 
   //Retrieve all Contenedores that fit the Resisuo name and location introduced by the user
-  app.get("/residuos/:residuoName/:latitude/:longitude", residuos.find);
+  app.get("/residuos/:residuoName/:latitude/:longitude", controller.find);
+
+};
 
 /*****************************************************************/
 
@@ -29,4 +31,3 @@ module.exports = app => {
 
   // Delete all Residuos in the database
   app.delete("/residuos", residuos.deleteAll);*/
-};
