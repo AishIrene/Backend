@@ -1,5 +1,7 @@
 const sql = require("./db.js");
 
+/*Retrieve all "Residuos"*/
+
 exports.getAll = result => {
   sql.query("SELECT * FROM residuo", (err, res) => {
     if (err) {
@@ -13,7 +15,7 @@ exports.getAll = result => {
   });
 };
 
-/********************************/
+/*Retrieve one "Residuo" by its name*/
 
 exports.findByName = (residuoName, result) => {
   
@@ -25,17 +27,17 @@ exports.findByName = (residuoName, result) => {
     }
 
     if (res.length) {
-      console.log("Found residuo: ", res[0]);
+      console.log("Found \"Residuo\": ", res[0]);
       result(null, res[0]);
       return;
     }
 
-    // Not found Residuo with that name
+    // If "Residuo" with that name is not found
     result({ kind: "not_found" }, null);
   });
 };
 
-/********************************/
+/*Retrieve all entries of one "Residuo" by its ID */
 
 exports.findById = (residuoId, result) => {
   sql.query(`SELECT * FROM lugar_de_desecho WHERE residuoID = ${residuoId}`, (err, res) => {
@@ -46,22 +48,42 @@ exports.findById = (residuoId, result) => {
     }
 
     if (res.length) {
-      console.log("Found results: ", res[0]);
-      result(null, res[0]);
+      console.log("Found results: ", res);
+      result(null, res);
       return;
     }
 
-    // Results not found
+    // If results are not found
     result({ kind: "not_found" }, null);
   });
 };
 
-/********************************/
+/*Retrieve all "Contenedores" by their name and their location (aproximated within an specific radius)*/
 
 exports.findByLocation = (contenedor, type, latitude, longitude, result) => {
   var query = "";
-  if (type == "") query = `SELECT * FROM ${contenedor} WHERE latitud = "${latitude}" AND longitud = "${longitude}"`;
-  else query = `SELECT * FROM ${contenedor} WHERE tipo = "${type}" AND latitud = "${latitude}" AND longitud = "${longitude}"`;
+  var querySection = "";
+
+  if (type == "") querySection = "";
+  else querySection = "tipo = \"" + type + "\" AND";
+
+  query = `SELECT * FROM (
+            SELECT *, 
+                (
+                    (
+                      (
+                        acos(
+                            sin(( ${latitude} * pi() / 180)) * sin(( latitud * pi() / 180)) 
+                            + 
+                            cos(( ${latitude} * pi() / 180 )) * cos(( latitud * pi() / 180)) 
+                            * 
+                            cos((( ${longitude} - longitud) * pi() / 180)))
+                        ) * 180 / pi()
+                      ) * 60 * 1.1515 * 1.609344
+                    ) as distance FROM ${contenedor}
+                ) ${contenedor}
+          WHERE ${querySection} distance <= 60
+          LIMIT 15;`;
   
    sql.query(query, (err, res) => {
     if (err) {
@@ -71,21 +93,59 @@ exports.findByLocation = (contenedor, type, latitude, longitude, result) => {
     }
 
     if (res.length) {
-      console.log("Found contenedor(es): ", res[0]);
-      result(null, res[0]);
+      console.log("Found \"contenedor(es)\": ", res);
+      result(null, res);
       return;
     }
 
-    // Not found contenedor near that location
+    // If a "Contenedor" near that location is not found
     result({ kind: "not_found" }, null);
   });
 };
 
 /************************************************************************/
+/*if (type == "") query = `SELECT * FROM ${contenedor} WHERE latitud = "${latitude}" AND longitud = "${longitude}"`;
+else query = `SELECT * FROM ${contenedor} WHERE tipo = "${type}" AND latitud = "${latitude}" AND longitud = "${longitude}"`;*/
 
-/*
+/*  if (type == "") {
+    query = `SELECT * FROM (
+              SELECT *, 
+                  (
+                      (
+                        (
+                          acos(
+                              sin(( ${latitude} * pi() / 180)) * sin(( latitud * pi() / 180)) 
+                              + 
+                              cos(( ${latitude} * pi() / 180 )) * cos(( latitud * pi() / 180)) 
+                              * 
+                              cos((( ${longitude} - longitud) * pi() / 180)))
+                          ) * 180 / pi()
+                        ) * 60 * 1.1515 * 1.609344
+                      ) as distance FROM ${contenedor}
+                  ) ${contenedor}
+            WHERE distance <= 60
+            LIMIT 15;`;
+  } else {
+    query = `SELECT * FROM (
+              SELECT *, 
+                  (
+                      (
+                        (
+                          acos(
+                              sin(( ${latitude} * pi() / 180)) * sin(( latitud * pi() / 180)) 
+                              + 
+                              cos(( ${latitude} * pi() / 180 )) * cos(( latitud * pi() / 180)) 
+                              * 
+                              cos((( ${longitude} - longitud) * pi() / 180)))
+                          ) * 180 / pi()
+                        ) * 60 * 1.1515 * 1.609344
+                      ) as distance FROM ${contenedor}
+                  ) ${contenedor}
+            WHERE tipo = "${type}" AND distance <= 60
+            LIMIT 15;`;
+  }*/
 
-Residuo.findById = (residuoId, result) => {
+/*Residuo.findById = (residuoId, result) => {
   sql.query(`SELECT * FROM residuos WHERE id = ${residuoId}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -102,9 +162,9 @@ Residuo.findById = (residuoId, result) => {
     // not found Residuo with the id
     result({ kind: "not_found" }, null);
   });
-};
+};*/
 
-Residuo.create = (newResiduo, result) => {
+/*Residuo.create = (newResiduo, result) => {
   sql.query("INSERT INTO residuos SET ?", newResiduo, (err, res) => {
     if (err) {
       console.log("error: ", err);

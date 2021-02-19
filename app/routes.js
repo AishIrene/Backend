@@ -4,11 +4,11 @@ module.exports = app => {
   
   const controller = require("./controller.js");
 
-  // Retrieve all Residuos
+  // Retrieve all "Residuos"
   app.get("/residuos", controller.findAll);
 
-  //Retrieve all Contenedores that fit the Resisuo name and location introduced by the user
-  app.get("/residuos/:residuoName/:latitude/:longitude", controller.find);
+  //Retrieve all "Contenedores" that fit the "Resisuo" name and location introduced by the user
+  app.get("/residuos/:residuoName/:address", controller.find);
 
 };
 
