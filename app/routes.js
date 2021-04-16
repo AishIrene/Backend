@@ -7,8 +7,14 @@ module.exports = app => {
   // Retrieve all "Residuos"
   app.get("/residuos", controller.findAll);
 
-  //Retrieve all "Contenedores" that fit the "Resisuo" name and location introduced by the user
+  // Retrieve an specific "Residuo"
+  app.get("/residuos/:residuoName", controller.findOne);
+
+  //Retrieve all "Contenedores" that fit the "Residuo" name and location introduced by the user
   app.get("/residuos/:residuoName/:address", controller.find);
+
+  //Retrieve coordinates of a location
+  app.get("/:address", controller.findCoords)
 
 };
 

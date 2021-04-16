@@ -1,7 +1,6 @@
 const model = require("./model.js");
 const googleAPI = require("./config/googleAPI.config.js");
 const https = require ("https");
-const { on } = require("./db.js");
 
 // Retrieve all "Residuos" from the database
 exports.findAll = (req, res) => {
@@ -16,9 +15,27 @@ exports.findAll = (req, res) => {
   });
 };
 
+// Retrieve a single "Residuo" using its name
+exports.findOne = (req, res) => {
+  model.findByName(req.params.residuoName, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found "Residuo" with name ${req.params.residuoName}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving \"Residuo\" with name " + req.params.residuoName
+        });
+      }
+    } else res.send(data);
+  });
+};
+
 // Retrieve all "Contenedores" that fit the "Resisuo" name and the location introduced by the user
 exports.find = (req, res) => {
-  //First we retrieve the "Residuo" with that specific name to find its ID
+  
+  // First we retrieve the "Residuo" with that specific name to find its ID
   model.findByName(req.params.residuoName, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -31,7 +48,7 @@ exports.find = (req, res) => {
         });
       }
     } else {
-      //Then, using the ID we got, we retrieve the type of "Contenedor" (donde_desechar) used to dispose of that kind of "Residuo"
+      // Then, using the ID we got, we retrieve the type of "Contenedor" (donde_desechar) used to dispose of that kind of "Residuo"
       model.findById(data.residuoID, (err, data) => {
         if (err) {
           if (err.kind === "not_found") {
@@ -45,22 +62,25 @@ exports.find = (req, res) => {
           }
         } else {
           var newData = [];
-          var counter = data.length;
+          var readyToSendCounter = data.length;
+          var otherData = [];
+          var resultsIndex = 0;
+          otherData.push(readyToSendCounter);
 
-          //Finally, we calculate the coordinates of the location introduced by the user 
+          // Finally, we calculate the coordinates of the location introduced by the user 
           coordinates(req.params.address, (coords) => {
             data.forEach(element => { 
               var contenedor = "";
               var type = "";
                     
-              if(element.donde_desechar.substring(11).includes("_") || element.donde_desechar.substring(11) == ("pilas" || "ropa")) 
+              if(element.donde_desechar.substring(11).includes("_") || element.donde_desechar.substring(11) == "pilas" || element.donde_desechar.substring(11) == "ropa")  
                 contenedor = element.donde_desechar;
               else {
                 contenedor = "contenedor";
                 type = element.donde_desechar.substring(11);
-              }
+              }       
               
-              //And we and look for the "Contendores" of that type located near that location
+              // And we and look for the "Contendores" of that type located near that location
               model.findByLocation(contenedor, type, coords.lat, coords.lng, (err, data) => {
                 if (err) {
                   if (err.kind === "not_found") {
@@ -73,11 +93,14 @@ exports.find = (req, res) => {
                     });
                   }
                 } else {
+                  var additionalInfo = '{"contenedorType":"' + element.donde_desechar + '", "startIndex":"' + resultsIndex + '", ';
                   data.forEach(element => {     
                     newData.push(element);
+                    resultsIndex++;
                   });
-                  counter--;
-                  if (counter == 0) res.send(newData);
+                  otherData.push(JSON.parse(additionalInfo + '"endIndex":"' + (resultsIndex - 1) + '"}'));
+                  readyToSendCounter--;
+                  if (readyToSendCounter == 0) res.send(otherData.concat(newData));
                 }
               });
             });
@@ -88,30 +111,52 @@ exports.find = (req, res) => {
   });
 };
 
-//We use the Google Maps geocoding API to convert the address into geocoordinates 
-coordinates = (address, result) => {
-  
-  //To use the API we need an API key 
-  url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&key=" + googleAPI.API_KEY;
-  
-  https.get(url, (res) => {
-
-    res.setEncoding('utf8');    
-
-    //We might get the result data in chunks so we need to concatenate them
-    var info = "";
-    res.on('data', (d) => {
-      info += d;
-    });
-
-    //Once we stop getting chunks of data, we parse the data and turn it to JSON format and send it (only the geolocation related information)
-    res.on('end', () => {
-      result(JSON.parse(info).results[0].geometry.location);
-    });
-
-  }).on('error', (e) => {
-    console.error(e);
+//Retrieve coordinates of a location
+exports.findCoords = (req, res) => {
+  coordinates(req.params.address, (coords) => {
+    res.send(coords);
   });
+}
+
+// We use the Google Maps geocoding API to convert the address into geocoordinates 
+coordinates = (address, result) => {
+
+  var altAddress = JSON.parse('{"lat": "all", "lng": "all"}');
+  
+  if (address != "all") {
+
+    // To use the API we need an API key 
+    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + ",Madrid&key=" + googleAPI.API_KEY;
+    
+    https.get(url, (res) => {
+
+      res.setEncoding('utf8');    
+
+      // We might get the result data in chunks so we need to concatenate them
+      var info = "";
+      res.on('data', (d) => {
+        info += d;
+      });
+
+      // Once we stop getting chunks of data, we parse the data and turn it to JSON format and send it (only the geolocation related information)
+      res.on('end', () => {
+        var addressJson = JSON.parse(info);
+
+        //console.log(x.results[0].address_components[2].long_name);
+
+        if(addressJson.status != 'OK' || addressJson.results[0].address_components[2].long_name != "Madrid") result(altAddress);
+        else
+          result(addressJson.results[0].geometry.location);
+          
+      });
+
+    }).on('error', (e) => {
+      console.error(e);
+    });
+
+  } else result(altAddress);
+  
+
 };
 
 
@@ -144,7 +189,7 @@ coordinates = (address, result) => {
           }
         } else {
           var newData = [];
-          var counter = data.length;
+          var readyToSendCounter = data.length;
           data.forEach(element => { 
             var contenedor = "";
             var type = "";
@@ -173,8 +218,8 @@ coordinates = (address, result) => {
                   data.forEach(element => {     
                     newData.push(element);
                   });
-                  counter--;
-                  if (counter == 0) res.send(newData);
+                  readyToSendCounter--;
+                  if (readyToSendCounter == 0) res.send(newData);
                 }
               });
             });

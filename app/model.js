@@ -3,7 +3,7 @@ const sql = require("./db.js");
 /*Retrieve all "Residuos"*/
 
 exports.getAll = result => {
-  sql.query("SELECT * FROM residuo", (err, res) => {
+  sql.query("SELECT * FROM residuo ORDER BY nombre ASC", (err, res) => {
     if (err) {
       console.log("Error: ", err);
       result(null, err);
@@ -29,6 +29,34 @@ exports.findByName = (residuoName, result) => {
     if (res.length) {
       console.log("Found \"Residuo\": ", res[0]);
       result(null, res[0]);
+      return;
+    }
+
+    // If "Residuo" with that name is not found
+    findByWords(residuoName, result);
+  });
+};
+
+findByWords = (residuoName, result) => {
+
+  var words = residuoName.split(" ");
+  var query = `SELECT * FROM residuo WHERE nombre LIKE ''`;
+
+  words.forEach(word => {
+    query += `UNION
+              SELECT * FROM residuo WHERE nombre LIKE '%${word}%'`;
+  });
+  
+  sql.query(query, (err, res) => {
+    if (err) {
+      console.log("Error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("Found multiple possible \"Residuos\": ", res);
+      result(null, res);
       return;
     }
 
@@ -65,27 +93,40 @@ exports.findByLocation = (contenedor, type, latitude, longitude, result) => {
   var querySection = "";
 
   if (type == "") querySection = "";
-  else querySection = "tipo = \"" + type + "\" AND";
-
-  query = `SELECT * FROM (
-            SELECT *, 
-                (
-                    (
-                      (
-                        acos(
-                            sin(( ${latitude} * pi() / 180)) * sin(( latitud * pi() / 180)) 
-                            + 
-                            cos(( ${latitude} * pi() / 180 )) * cos(( latitud * pi() / 180)) 
-                            * 
-                            cos((( ${longitude} - longitud) * pi() / 180)))
-                        ) * 180 / pi()
-                      ) * 60 * 1.1515 * 1.609344
-                    ) as distance FROM ${contenedor}
-                ) ${contenedor}
-          WHERE ${querySection} distance <= 60
-          LIMIT 15;`;
+  else querySection = "tipo = \"" + type + "\"";
   
-   sql.query(query, (err, res) => {
+  if(latitude == "all") {
+
+    if (querySection != "") querySection = "WHERE " + querySection;
+
+    query = `SELECT * FROM ${contenedor}
+             ${querySection}`;
+    
+  } else {
+
+    if (querySection != "") querySection += " AND";
+
+    query = `SELECT * FROM (
+              SELECT *, 
+                  (
+                      (
+                        (
+                          acos(
+                              sin(( ${latitude} * pi() / 180)) * sin(( latitud * pi() / 180)) 
+                              + 
+                              cos(( ${latitude} * pi() / 180 )) * cos(( latitud * pi() / 180)) 
+                              * 
+                              cos((( ${longitude} - longitud) * pi() / 180)))
+                          ) * 180 / pi()
+                        ) * 60 * 1.1515 * 1.609344
+                      ) as distance FROM ${contenedor}
+                  ) ${contenedor}
+             WHERE ${querySection} distance <= 60
+             ORDER By distance ASC
+             LIMIT 5;`;
+  }
+          
+  sql.query(query, (err, res) => {
     if (err) {
       console.log("Error: ", err);
       result(err, null);
@@ -230,6 +271,4 @@ else query = `SELECT * FROM ${contenedor} WHERE tipo = "${type}" AND latitud = "
     console.log(`deleted ${res.affectedRows} residuos`);
     result(null, res);
   });
-};
-
-*/
+};*/
